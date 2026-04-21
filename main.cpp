@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Equipo.h"
+#include "partido.h"
 #include "Lista.h"
 
 using namespace std;
@@ -14,13 +15,11 @@ int main() {
     e1->inicializarJugadores();
     e2->inicializarJugadores();
 
-    listaEquipos.agregar(e1, 0);
-    listaEquipos.agregar(e2, 1);
 
-    for(int i = 0; i < listaEquipos.tamano(); i++) {
-        Equipo* e = listaEquipos.consultar(i);
-        cout << "Equipo: " << e->getPais() << endl;
-    }
+    Partido p(e1, e2);
+
+    p.simular();
+    p.mostrarResultado();
 
     return 0;
 }
