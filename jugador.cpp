@@ -44,7 +44,6 @@ void Jugador::jugarPartido(int minutos) {
     minutosJugados += minutos;
 }
 
-// Getters
 string Jugador::getNombre() const { return nombre; }
 string Jugador::getApellido() const { return apellido; }
 int Jugador::getNumero() const { return numero; }

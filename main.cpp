@@ -1,16 +1,26 @@
-#include "jugador.h"
 #include <iostream>
+#include "Equipo.h"
+#include "Lista.h"
 
 using namespace std;
 
-int main()
-{
-    Jugador j1("nombre1", "apellido1", 10);
+int main() {
 
-    j1.jugarPartido(90);
-    j1.anotarGol();
-    j1.recibirAmarilla();
+    Lista<Equipo*> listaEquipos;
 
-    j1.mostrar();
+    Equipo* e1 = new Equipo("Colombia", "CONMEBOL", 10, "DT1");
+    Equipo* e2 = new Equipo("Brasil", "CONMEBOL", 1, "DT2");
+
+    e1->inicializarJugadores();
+    e2->inicializarJugadores();
+
+    listaEquipos.agregar(e1, 0);
+    listaEquipos.agregar(e2, 1);
+
+    for(int i = 0; i < listaEquipos.tamano(); i++) {
+        Equipo* e = listaEquipos.consultar(i);
+        cout << "Equipo: " << e->getPais() << endl;
+    }
+
     return 0;
 }
