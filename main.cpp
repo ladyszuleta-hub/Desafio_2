@@ -1,25 +1,46 @@
 #include <iostream>
-#include "Equipo.h"
-#include "partido.h"
-#include "Lista.h"
+#include <cstdlib> // rand, srand
+#include <ctime>   // time
+#include <fstream>
+#include "Mundial.h"
+
+
 
 using namespace std;
 
 int main() {
 
-    Lista<Equipo*> listaEquipos;
+    // No esta leyendo el archivo =(
+    ifstream test("selecciones_clasificadas_mundial.csv");
 
-    Equipo* e1 = new Equipo("Colombia", "CONMEBOL", 10, "DT1");
-    Equipo* e2 = new Equipo("Brasil", "CONMEBOL", 1, "DT2");
+    if (test.is_open()) {
+        cout << "Archivo encontrado" << endl;
+    } else {
+        cout << "Archivo NO encontrado" << endl;
+    }
+    srand(time(0));
 
-    e1->inicializarJugadores();
-    e2->inicializarJugadores();
+    Mundial mundial;
 
+    cout << "===== CARGANDO EQUIPOS =====" << endl;
+    mundial.cargarEquipos("selecciones_clasificadas_mundial.csv");
 
-    Partido p(e1, e2);
+    cout << "\n===== FORMANDO GRUPOS =====" << endl;
+    mundial.formarGrupos();
 
-    p.simular();
-    p.mostrarResultado();
+    cout << "\n===== GRUPOS =====" << endl;
+    mundial.mostrarGrupos();
+
+    cout << "\n===== GENERANDO PARTIDOS =====" << endl;
+    mundial.generarPartidosGrupos();
+
+    cout << "\n===== SIMULANDO FASE DE GRUPOS =====" << endl;
+    mundial.simularFaseGrupos();
+
+    cout << "\n===== MEMORIA =====" << endl;
+    mundial.mostrarMemoria();
+
+    cout << "\n===== FIN =====" << endl;
 
     return 0;
 }

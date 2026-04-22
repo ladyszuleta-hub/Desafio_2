@@ -25,7 +25,10 @@ public:
     ~Nodo() {}
 
 
-    T getDato() {
+    T& getDato() {
+        return dato;
+    }
+    const T& getDato()const{
         return dato;
     }
 

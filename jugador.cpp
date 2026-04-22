@@ -67,6 +67,9 @@ void Jugador::recibirRoja() {
 void Jugador::Cometerfalta(){
     faltas++;
 }
+bool Jugador::operator==(const Jugador& otro) const {
+    return numero == otro.numero;
+}
 
 void Jugador::mostrar() const {
     cout << "Jugador: " << nombre << " " << apellido << endl;

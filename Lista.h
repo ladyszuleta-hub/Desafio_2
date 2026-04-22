@@ -97,10 +97,11 @@ public:
         }
     }
 
-    T consultar(int i) const {
-        if (i < 0 || i >= n) {
-            return T();
-        }
+    T& consultar(int i) {
+        return nodoEn(i)->getDato();
+    }
+
+    const T& consultar(int i) const {
         return nodoEn(i)->getDato();
     }
 

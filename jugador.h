@@ -31,6 +31,8 @@ public:
     void Asistencias();
     void jugarPartido(int minutos);
 
+    bool operator==(const Jugador& otro) const;
+
     string getNombre() const;
     string getApellido() const;
     int getNumero() const;
