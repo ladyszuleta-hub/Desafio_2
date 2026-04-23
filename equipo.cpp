@@ -1,21 +1,21 @@
 #include "Equipo.h"
 #include <iostream>
 
-    Equipo::Equipo() {
+Equipo::Equipo() {
     jugadores = nullptr;
     cantidadJugadores = 0;
     golesFavor = 0;
     golesContra = 0;
 }
 
-Equipo::Equipo(string pais, string conf, int ranking, string dt) {
+Equipo::Equipo(string pais, string conf, int ranking, string dt, int gf, int gc) {
     this->pais = pais;
     this->confederacion = conf;
     this->ranking = ranking;
     this->directorTecnico = dt;
 
-    golesFavor = 0;
-    golesContra = 0;
+    golesFavor = gf;
+    golesContra = gc;
 
     jugadores = nullptr;
     cantidadJugadores = 0;
@@ -36,12 +36,24 @@ void Equipo::inicializarJugadores() {
 string Equipo::getPais() const {
     return pais;
 }
+double Equipo::getPromedioGolesFavor() const {
+    return (double)golesFavor;
+}
 
+double Equipo::getPromedioGolesContra() const {
+    return (double)golesContra;
+}
 void Equipo::actualizarEstadisticas(int gf, int gc) {
     golesFavor += gf;
     golesContra += gc;
 }
+int Equipo::getGolesFavor() const {
+    return golesFavor;
+}
 
+int Equipo::getGolesContra() const {
+    return golesContra;
+}
 Equipo::~Equipo() {
     delete[] jugadores;
 }

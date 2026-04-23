@@ -1,4 +1,5 @@
 #include "Mundial.h"
+#include "partido.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -10,6 +11,7 @@ Mundial::Mundial() {
     }
 }
 void Mundial::cargarEquipos(const string& archivo) {
+
     ifstream file(archivo);
 
     if (!file.is_open()) {
@@ -24,25 +26,46 @@ void Mundial::cargarEquipos(const string& archivo) {
 
     int i = 0;
     while (getline(file, linea)) {
+
+        if (linea.empty()) continue;
+
+        //  Eliminar caracter raro del inicio
+        if (linea[0] == '\xEF') {
+            linea = linea.substr(3);}
+
         stringstream ss(linea);
 
-        string pais, conf, rankingStr, dt;
+        string pais, conf, rankingStr, dt, federacion, gfStr, gcStr;
 
-        getline(ss, pais, ',');
-        getline(ss, conf, ',');
-        getline(ss, rankingStr, ',');
-        getline(ss, dt, ',');
+        getline(ss, pais, ';');
+        getline(ss, dt, ';');
+        getline(ss, federacion, ';');
+        getline(ss, conf, ';');
+        getline(ss, gfStr, ';');
+        getline(ss, gcStr, ';');
 
-        int ranking = stoi(rankingStr);
+        if (rankingStr.empty() || gfStr.empty() || gcStr.empty()) {
+            cout << "Error en linea: " << linea << endl;
+            continue;
+        }
 
-        Equipo* e = new Equipo(pais, conf, ranking, dt);
+        try {
+            int ranking = stoi(rankingStr);
+            int gf = stoi(gfStr);
+            int gc = stoi(gcStr);
+
+        Equipo* e = new Equipo(pais, conf, ranking, dt, gf, gc);
         e->inicializarJugadores();
 
         equipos.agregar(e, i++);
+    } catch (...) {
+            cout << "Error convirtiendo linea: " << linea << endl;
+        }
     }
 
     file.close();
 }
+
 void Mundial::formarGrupos() {
 
     // Mezclar equipos (Fisher-Yates simple)

@@ -10,7 +10,7 @@ using namespace std;
 
 int main() {
 
-    // No esta leyendo el archivo =(
+    // ya lee el archivo pero sigue con problemas
     ifstream test("selecciones_clasificadas_mundial.csv");
 
     if (test.is_open()) {
