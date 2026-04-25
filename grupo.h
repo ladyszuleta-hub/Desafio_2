@@ -15,6 +15,7 @@ public:
     Grupo(); //Constructor vacio
 
     // Métodos
+    bool puedeAgregar(Equipo* e);
     void agregarEquipo(Equipo* e);
     void mostrarEquipos() const;
     Equipo* getEquipo(int i);

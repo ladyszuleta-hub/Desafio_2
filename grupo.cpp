@@ -10,7 +10,29 @@ Grupo::Grupo(char letra) {
 Grupo::Grupo() {
     letra = '?';
 }
+bool Grupo::puedeAgregar(Equipo* e) {
 
+    int contadorUEFA = 0;
+
+    for (int i = 0; i < equipos.tamano(); i++) {
+
+        Equipo* actual = equipos.consultar(i);
+
+        if (actual->getConfederacion() == e->getConfederacion()) {
+
+            if (e->getConfederacion() != "UEFA") {
+                return false;
+            }
+
+            contadorUEFA++;
+        }
+    }
+    if (e->getConfederacion() == "UEFA" && contadorUEFA >= 2) {
+        return false;
+    }
+
+    return true;
+}
 void Grupo::agregarEquipo(Equipo* e) {
     if (equipos.tamano() < 4) {
         equipos.agregar(e, equipos.tamano());

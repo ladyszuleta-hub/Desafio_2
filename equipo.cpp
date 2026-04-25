@@ -54,6 +54,12 @@ int Equipo::getGolesFavor() const {
 int Equipo::getGolesContra() const {
     return golesContra;
 }
+int Equipo::getRanking() const {
+    return ranking;
+}
+string Equipo::getConfederacion() const {
+    return confederacion;
+}
 Equipo::~Equipo() {
     delete[] jugadores;
 }

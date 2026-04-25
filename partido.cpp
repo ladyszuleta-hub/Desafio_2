@@ -2,18 +2,28 @@
 #include <iostream>
 #include <cstdlib> // rand()
 #include <cmath>
+#include <string>
 
 using namespace std;
 
-Partido::Partido(Equipo* e1, Equipo* e2) {
+Partido::Partido(Equipo* e1, Equipo* e2, string fecha, string hora,
+        string sede, string a1, string a2, string a3, Fase f) {
+
     equipo1 = e1;
     equipo2 = e2;
 
+    this->fecha = fecha;
+    this->hora = hora;
+    this->sede = sede;
+
+    arbitro1 = a1;
+    arbitro2 = a2;
+    arbitro3 = a3;
+
+    fase = f;
+
     goles1 = 0;
     goles2 = 0;
-
-    fecha = "20/06/2026";
-    sede = "nombreSede";
 }
 
 void Partido::simular() {

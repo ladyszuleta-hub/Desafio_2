@@ -21,7 +21,7 @@ private:
 
 public:
     Equipo();
-   Equipo(string pais, string conf, int ranking, string dt, int gf, int gc);
+    Equipo(string pais, string conf, int ranking, string dt, int gf, int gc);
 
     void inicializarJugadores();
 
@@ -30,6 +30,8 @@ public:
     double getPromedioGolesContra() const;
     int getGolesFavor() const;
     int getGolesContra() const;
+    int getRanking() const;
+    string getConfederacion() const;
 
     void actualizarEstadisticas(int gf, int gc);
 
