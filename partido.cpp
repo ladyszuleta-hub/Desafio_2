@@ -43,12 +43,34 @@ void Partido::simular() {
     goles1 = rand() % ((int)lambdaA + 1);
     goles2 = rand() % ((int)lambdaB + 1);
 
-    //  Actualizo estadísticas de equipos
+
     equipo1->actualizarEstadisticas(goles1, goles2);
     equipo2->actualizarEstadisticas(goles2, goles1);
+}
+bool Partido::empate() const {
+    return goles1 == goles2;
+}
+void Partido::desempatarPorRanking() {
+
+    if (equipo1->getRanking() < equipo2->getRanking()) {
+        goles1++;
+    } else {
+        goles2++;
+    }
 }
 void Partido::mostrarResultado() {
     cout << equipo1->getPais() << " " << goles1
          << " - " << goles2 << " "
          << equipo2->getPais() << endl;
 }
+Equipo* Partido::getGanador() {
+
+    if (goles1 > goles2)
+        return equipo1;
+    else if (goles2 > goles1)
+        return equipo2;
+    else
+        return nullptr; // empate
+}
+
+

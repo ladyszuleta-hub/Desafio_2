@@ -20,6 +20,13 @@ Equipo::Equipo(string pais, string conf, int ranking, string dt, int gf, int gc)
     jugadores = nullptr;
     cantidadJugadores = 0;
 }
+void Equipo::setGrupo(char g) {
+    grupo = g;
+}
+
+char Equipo::getGrupo() const {
+    return grupo;
+}
 
 void Equipo::inicializarJugadores() {
     cantidadJugadores = 26;

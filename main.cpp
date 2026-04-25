@@ -23,7 +23,8 @@ int main() {
     srand(time(0));
 
     Mundial mundial;
-
+    mundial.iniciar();
+/*
     cout << "===== CARGANDO EQUIPOS =====" << endl;
     mundial.cargarEquipos("selecciones_clasificadas_mundial.csv");
     mundial.crearBombos();
@@ -35,10 +36,9 @@ int main() {
     mundial.mostrarGrupos();
 
     cout << "\n===== GENERANDO PARTIDOS =====" << endl;
-    //mundial.generarPartidosGrupos();
+    mundial.generarPartidosGrupos();
 
-    cout << "\n===== SIMULANDO FASE DE GRUPOS =====" << endl;
-    //mundial.simularFaseGrupos();
+    cout << "\n===== SIMULANDO FASE DE GRUPOS =====" << endl;*/
 
     cout << "\n===== MEMORIA =====" << endl;
     mundial.mostrarMemoria();

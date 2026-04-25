@@ -118,6 +118,14 @@ public:
             actualB = actualB->getSiguiente();
         }
     }
+    void vaciar() {
+        while (cabeza != nullptr) {
+            Nodo<T>* tmp = cabeza;
+            cabeza = cabeza->getSiguiente();
+            delete tmp;
+        }
+        n = 0;
+    }
 
     static size_t memoryUsage() {
         return memoriaTotal;

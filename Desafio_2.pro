@@ -9,7 +9,10 @@ SOURCES += \
         jugador.cpp \
         main.cpp \
         mundial.cpp \
-        partido.cpp
+        partido.cpp \
+        sorteo.cpp \
+        tablagrupo.cpp \
+        utilidades.cpp
 
 HEADERS += \
     Equipo.h \
@@ -18,4 +21,7 @@ HEADERS += \
     grupo.h \
     jugador.h \
     mundial.h \
-    partido.h
+    partido.h \
+    sorteo.h \
+    tablagrupo.h \
+    utilidades.h

@@ -22,6 +22,10 @@ private:
 public:
     Equipo();
     Equipo(string pais, string conf, int ranking, string dt, int gf, int gc);
+    char grupo;
+
+    void setGrupo(char g);
+    char getGrupo() const;
 
     void inicializarJugadores();
 

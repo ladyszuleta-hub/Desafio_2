@@ -30,6 +30,7 @@ private:
     string arbitro2;
     string arbitro3;
 
+
     Fase fase;
 
 public:
@@ -38,6 +39,14 @@ public:
 
     void simular();
     void mostrarResultado();
+    Equipo* getEquipo1() const { return equipo1; }
+    Equipo* getEquipo2() const { return equipo2; }
+    bool empate() const;
+    void desempatarPorRanking();
+    Equipo* getGanador();
+
+    int getGoles1() const { return goles1; }
+    int getGoles2() const { return goles2; }
 };
 
 #endif

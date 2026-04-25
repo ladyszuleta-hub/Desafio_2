@@ -49,7 +49,12 @@ void Grupo::mostrarEquipos() const {
         cout << "- " << equipos.consultar(i)->getPais() << endl;
     }
 }
-
+void Grupo::quitarUltimo() {
+    if (equipos.tamano() > 0) {
+        Equipo* e = equipos.consultar(equipos.tamano() - 1);
+        equipos.eliminar(e);
+    }
+}
 Equipo* Grupo::getEquipo(int i) {
     return equipos.consultar(i);
 }
