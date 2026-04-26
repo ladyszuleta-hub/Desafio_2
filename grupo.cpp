@@ -1,4 +1,4 @@
-#include "Grupo.h"
+#include "grupo.h"
 #include <iostream>
 
 using namespace std;
@@ -55,10 +55,15 @@ void Grupo::quitarUltimo() {
         equipos.eliminar(e);
     }
 }
-Equipo* Grupo::getEquipo(int i) {
-    return equipos.consultar(i);
-}
 // Getter
 char Grupo::getLetra() const {
     return letra;
+}
+int Grupo::getTamano() const {
+    return equipos.tamano();
+}
+
+Equipo* Grupo::getEquipo(int i) {
+    if (i < 0 || i >= equipos.tamano()) return nullptr;
+    return equipos.consultar(i);
 }

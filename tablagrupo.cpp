@@ -1,14 +1,18 @@
 #include "tablagrupo.h"
 
-TablaGrupo::TablaGrupo() {}
-
+TablaGrupo::TablaGrupo() {
+    grupo = nullptr;
+}
 void TablaGrupo::inicializar() {
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < grupo->getTamano(); i++) {
+
+        Equipo* eq = grupo->getEquipo(i);
+        if (eq == nullptr) continue;
 
         StatsEquipo* s = new StatsEquipo;
 
-        s->equipo = grupo->getEquipo(i);
+        s->equipo = eq;
         s->puntos = 0;
         s->gf = 0;
         s->gc = 0;
@@ -18,8 +22,12 @@ void TablaGrupo::inicializar() {
 }
 void TablaGrupo::actualizar(Partido* p) {
 
+    if (p == nullptr) return;
+
     Equipo* A = p->getEquipo1();
     Equipo* B = p->getEquipo2();
+
+    if (A == nullptr || B == nullptr) return;
 
     int gA = p->getGoles1();
     int gB = p->getGoles2();
@@ -27,6 +35,8 @@ void TablaGrupo::actualizar(Partido* p) {
     for (int i = 0; i < tabla.tamano(); i++) {
 
         StatsEquipo* s = tabla.consultar(i);
+
+        if (s == nullptr || s->equipo == nullptr) continue;
 
         if (s->equipo == A) {
 
@@ -125,3 +135,4 @@ Lista<Equipo*> TablaGrupo::clasificados() {
         delete tabla.consultar(i);
     }
 }*/
+

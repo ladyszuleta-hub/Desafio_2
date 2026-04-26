@@ -1,10 +1,10 @@
 #ifndef EQUIPO_H
 #define EQUIPO_H
-
+#include "jugador.h"
 #include <string>
+#include <map>
 using namespace std;
 
-#include "Jugador.h"
 
 class Equipo {
 private:
@@ -18,6 +18,9 @@ private:
 
     Jugador* jugadores;
     int cantidadJugadores;
+    map<string, int> amarillasPorFase;
+    int amarillasTotales = 0;
+    int rojasTotales=0;
 
 public:
     Equipo();
@@ -40,6 +43,13 @@ public:
     void actualizarEstadisticas(int gf, int gc);
 
     ~Equipo();
+    Jugador* getJugador(int i);
+    int getCantidadJugadores() const;
+    void sumarAmarilla(string fase, int cantidad);
+    int getAmarillasFase(string fase) const;
+    int getAmarillasTotales() const;
+    void acumularTarjetas(int amarillas, int rojas);
+    int getRojasTotales() const;
 };
 
 #endif

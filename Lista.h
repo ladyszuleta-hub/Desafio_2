@@ -22,6 +22,43 @@ private:
 
 public:
     Lista() : cabeza(nullptr), n(0) {}
+
+    // ✔ COPIA PROFUNDA (CLAVE)
+    Lista(const Lista<T>& other) {
+        cabeza = nullptr;
+        n = 0;
+
+        Nodo<T>* actual = other.cabeza;
+        int i = 0;
+
+        while (actual != nullptr) {
+            agregar(actual->getDato(), i);
+            actual = actual->getSiguiente();
+            i++;
+        }
+    }
+
+    // ✔ OPERADOR ASIGNACIÓN (CLAVE)
+    Lista<T>& operator=(const Lista<T>& other) {
+        if (this == &other) return *this;
+
+        vaciar();
+
+        Nodo<T>* actual = other.cabeza;
+        int i = 0;
+
+        while (actual != nullptr) {
+            agregar(actual->getDato(), i);
+            actual = actual->getSiguiente();
+            i++;
+        }
+
+        return *this;
+    }
+
+    // =========================
+    // DESTRUCTOR
+    // =========================
     ~Lista() {
         Nodo<T>* actual = cabeza;
         while (actual != nullptr) {
@@ -34,17 +71,15 @@ public:
         n = 0;
     }
 
-    int tamano() const {
-        return n;
-    }
+    // =========================
+    // MÉTODOS BÁSICOS
+    // =========================
 
-    bool esVacia() const {
-        return n == 0;
-    }
+    int tamano() const { return n; }
 
-    T primero() const {
-        return cabeza->getDato();
-    }
+    bool esVacia() const { return n == 0; }
+
+    T primero() const { return cabeza->getDato(); }
 
     T ultimo() const {
         Nodo<T>* actual = cabeza;
@@ -53,6 +88,10 @@ public:
         }
         return actual->getDato();
     }
+
+    // =========================
+    // OPERACIONES
+    // =========================
 
     void agregar(const T& e, int i) {
         if (i < 0 || i > n) return;
@@ -68,6 +107,7 @@ public:
             nuevo->setSiguiente(prev->getSiguiente());
             prev->setSiguiente(nuevo);
         }
+
         n++;
     }
 
@@ -118,6 +158,7 @@ public:
             actualB = actualB->getSiguiente();
         }
     }
+
     void vaciar() {
         while (cabeza != nullptr) {
             Nodo<T>* tmp = cabeza;
@@ -135,4 +176,4 @@ public:
 template <class T>
 size_t Lista<T>::memoriaTotal = 0;
 
-#endif //LISTA_H
+#endif

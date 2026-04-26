@@ -15,6 +15,8 @@ class Jugador
     int amarillas;
     int rojas;
     int faltas;
+    int golesTorneo;
+    int golesTotales;
 public:
     Jugador();
     Jugador(string nombre, string apellido, int numero);
@@ -24,21 +26,24 @@ public:
     ~Jugador();
 
     void registrarPartido(int minutos);
-    void anotarGol();
     void recibirAmarilla();
     void recibirRoja();
     void Cometerfalta();
     void Asistencias();
     void jugarPartido(int minutos);
+    void anotarGol();
+    int getGoles() const;
 
     bool operator==(const Jugador& otro) const;
 
     string getNombre() const;
     string getApellido() const;
     int getNumero() const;
-    int getGoles() const;
     int getPartidos() const;
     void mostrar() const;
+    void sumarGol();
+    int getGolesTorneo() const;
+
 };
 
 #endif // JUGADOR_H

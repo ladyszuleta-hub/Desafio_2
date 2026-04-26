@@ -2,7 +2,6 @@
 #include <cstdlib> // rand, srand
 #include <ctime>   // time
 #include <fstream>
-#include <sstream>
 #include "Mundial.h"
 
 
@@ -38,12 +37,12 @@ int main() {
     cout << "\n===== GENERANDO PARTIDOS =====" << endl;
     mundial.generarPartidosGrupos();
 
-    cout << "\n===== SIMULANDO FASE DE GRUPOS =====" << endl;*/
+    cout << "\n===== SIMULANDO FASE DE GRUPOS =====" << endl;
 
     cout << "\n===== MEMORIA =====" << endl;
     mundial.mostrarMemoria();
 
-    cout << "\n===== FIN =====" << endl;
+    cout << "\n===== FIN =====" << endl;*/
     }
     catch (const char* e){
         cout << "Error: " << e << endl;

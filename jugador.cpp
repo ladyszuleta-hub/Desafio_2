@@ -81,3 +81,11 @@ void Jugador::mostrar() const {
     cout << "Rojas: " << rojas << endl;
     cout << "Faltas: " << faltas << endl;
 }
+void Jugador::sumarGol() {
+    golesTorneo++;
+}
+
+int Jugador::getGolesTorneo() const {
+    return golesTorneo;
+}
+

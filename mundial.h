@@ -3,66 +3,103 @@
 #include <string>
 #include "Lista.h"
 #include "Equipo.h"
-#include "Grupo.h"
-#include "Partido.h"
-#include "TablaGrupo.h"
+#include "grupo.h"
+#include "partido.h"
+#include "tablagrupo.h"
+
+    using namespace std;
 
 class Mundial {
+
 private:
+    Equipo* campeon;
 
     Lista<Equipo*> equipos;
     Lista<Grupo*> grupos;
-    Lista<Partido*> partidos;
-    Lista<Partido*> partidosR16;
+
     Lista<Equipo*> bombo1;
     Lista<Equipo*> bombo2;
     Lista<Equipo*> bombo3;
     Lista<Equipo*> bombo4;
-    Lista<TablaGrupo*> tablas;
-    Lista<Equipo*> clasificadosR16;
+    Lista<Partido*> partidos;
+
+
+    Lista<Partido*> partidosR16;
+
     Lista<Equipo*> primeros;
     Lista<Equipo*> segundos;
-    Lista<Equipo*> terceros;
+    Lista<StatsEquipo*> terceros;
+
+    Lista<Equipo*> clasificadosR16;
+
+    Lista<Equipo*> clasificadosR8;
+    Lista<Equipo*> clasificadosR4;
+
+    Lista<Equipo*> todosLosJugadores; // para estadísticas
+
+
+    Lista<TablaGrupo*> tablas;
+
+
+    Lista<Enfrentamiento> historial;
+
+
+    long long iteracionesGlobal = 0;
+    long long memoriaGlobal = 0;
 
 public:
+
+
     Mundial();
     ~Mundial();
 
+
     void cargarEquipos(const string& archivo);
-
+    void mezclarLista(Lista<Equipo*>& lista);
     void crearBombos();
-
     void formarGrupos();
-    bool asignar(int grupoIdx, int bomboIdx);
     void mostrarGrupos();
-
     void generarPartidosGrupos();
     void simularFaseGrupos();
-
-    void calcularClasificados();
-
-    void generarEliminatorias();
-    void simularEliminatorias();
-
-    void mostrarEstadisticasFinales();
-    string calcularFecha(string base, int dias);
-    void mezclarLista(Lista<Equipo*>& lista);
-    void iniciar();
-
     void crearTablas();
     void mostrarTablas();
+
+
+    void calcularClasificados();
+    Lista<Equipo*> obtenerClasificados();
 
     void ordenarTerceros(Lista<StatsEquipo*>& terceros);
 
     // R16
     void generarR16();
     void simularR16();
-    Partido* crearCruceValido(Lista<Equipo*>& A, Lista<Equipo*>& B);
     void mostrarR16();
 
-    Lista<Equipo*> obtenerClasificados();
+
+    Lista<Partido*> generarFase(Lista<Equipo*>& equipos, Fase f);
+    void simularFase(Lista<Partido*>& fase, Lista<Equipo*>& clasificados);
+
+    Partido* crearCruceValido(Lista<Equipo*>& A, Lista<Equipo*>& B);
+
+    void registrarEnfrentamiento(Equipo* a, Equipo* b);
+    bool yaSeEnfrentaron(Equipo* a, Equipo* b);
+
+
+    void mostrarTop4();
+    void maximoGoleadorCampeon(Equipo* campeon);
+    void top3Goleadores();
+    void equipoMasGoleador();
+    void mostrarEstadisticasFinales();
+    void iniciar();
+    bool asignar(int grupoIdx, int bomboIdx);
+
+
+    void mostrarInformeFinal(Equipo* campeon);
+
+    string calcularFecha(string base, int dias);
 
     void mostrarMemoria();
+
 
 };
 
