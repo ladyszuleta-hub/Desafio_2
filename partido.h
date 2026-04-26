@@ -4,17 +4,29 @@
 #include <string>
 using namespace std;
 #include "Equipo.h"
-struct Enfrentamiento {
+class Enfrentamiento {
+public:
     Equipo* a;
     Equipo* b;
+
+    Enfrentamiento() {
+        a = nullptr;
+        b = nullptr;
+    }
+
+    Enfrentamiento(Equipo* a, Equipo* b) {
+        this->a = a;
+        this->b = b;
+    }
 };
-struct StatsJugadorPartido {
+class StatsJugadorPartido {
+public:
     Jugador* jugador;
-    int goles;
-    int amarillas;
-    int rojas;
-    int faltas;
-    int minutos;
+    short int goles;
+    short int amarillas;
+    short int rojas;
+    short int faltas;
+    short int minutos;
 };
 enum Fase {
     GRUPOS,
@@ -30,8 +42,8 @@ private:
     Equipo* equipo1;
     Equipo* equipo2;
 
-    int goles1;
-    int goles2;
+    short int goles1;
+    short int goles2;
 
     string fecha;
     string hora;
@@ -47,7 +59,19 @@ private:
     StatsJugadorPartido* jugadoresA;
     StatsJugadorPartido* jugadoresB;
 
+    string getFecha() const;
+
     string faseActual;
+    void calcularLambdas(double& lambdaA, double& lambdaB);
+
+    short int generarGoles(double lambda);
+
+    short int simularTiempo(int& amarillasA, int& rojasA,int& amarillasB, int& rojasB);
+
+    void seleccionarJugadores();
+    void repartirGoles();
+    void actualizarJugadores();
+    void actualizarEquipos(int amarillasA, int rojasA,int amarillasB, int rojasB);
 
 public:
     Partido(Equipo* e1, Equipo* e2, string fecha, string hora,
@@ -62,8 +86,8 @@ public:
     void desempatarPorRanking();
     Equipo* getGanador();
 
-    int getGoles1() const { return goles1; }
-    int getGoles2() const { return goles2; }
+    short int getGoles1() const { return goles1; }
+    short int getGoles2() const { return goles2; }
 };
 
 #endif

@@ -10,20 +10,21 @@ class Equipo {
 private:
     string pais;
     string confederacion;
-    int ranking;
+    short int ranking;
     string directorTecnico;
 
-    int golesFavor;
-    int golesContra;
+    short int golesFavor;
+    short int golesContra;
 
     Jugador* jugadores;
-    int cantidadJugadores;
+    short int cantidadJugadores;
     map<string, int> amarillasPorFase;
-    int amarillasTotales = 0;
-    int rojasTotales=0;
+    short int amarillasTotales = 0;
+    short int rojasTotales=0;
 
 public:
     Equipo();
+    Equipo(const Equipo& otro);
     Equipo(string pais, string conf, int ranking, string dt, int gf, int gc);
     char grupo;
 
@@ -35,21 +36,23 @@ public:
     string getPais() const;
     double getPromedioGolesFavor() const;
     double getPromedioGolesContra() const;
-    int getGolesFavor() const;
-    int getGolesContra() const;
-    int getRanking() const;
+    short int getGolesFavor() const;
+    short int getGolesContra() const;
+    short int getRanking() const;
     string getConfederacion() const;
 
     void actualizarEstadisticas(int gf, int gc);
+    void actualizarEstadisticas(int gf, int gc, int amarillas, int rojas);
 
     ~Equipo();
     Jugador* getJugador(int i);
-    int getCantidadJugadores() const;
+    short int getCantidadJugadores() const;
     void sumarAmarilla(string fase, int cantidad);
-    int getAmarillasFase(string fase) const;
-    int getAmarillasTotales() const;
+    short int getAmarillasFase(string fase) const;
+    short int getAmarillasTotales() const;
     void acumularTarjetas(int amarillas, int rojas);
-    int getRojasTotales() const;
+    short int getRojasTotales() const;
+    bool operator>(const Equipo& otro) const;
 };
 
 #endif

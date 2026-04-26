@@ -1,4 +1,5 @@
 #include "Equipo.h"
+#include "utilidades.h"
 #include <iostream>
 
 Equipo::Equipo() {
@@ -8,7 +9,24 @@ Equipo::Equipo() {
     golesContra = 0;
 
 }
+Equipo::Equipo(const Equipo& otro) {
 
+    pais = otro.pais;
+    confederacion = otro.confederacion;
+    ranking = otro.ranking;
+    directorTecnico = otro.directorTecnico;
+
+    golesFavor = otro.golesFavor;
+    golesContra = otro.golesContra;
+
+    cantidadJugadores = otro.cantidadJugadores;
+
+    jugadores = new Jugador[cantidadJugadores];
+
+    for (int i = 0; i < cantidadJugadores; i++) {
+        jugadores[i] = otro.jugadores[i];
+    }
+}
 Equipo::Equipo(string pais, string conf, int ranking, string dt, int gf, int gc) {
     this->pais = pais;
     this->confederacion = conf;
@@ -38,6 +56,16 @@ void Equipo::inicializarJugadores() {
         string apellido = "apellido" + to_string(i+1);
 
         jugadores[i] = Jugador(nombre, apellido, i+1);
+        ITERACIONES++;
+    }
+    int golesRestantes = golesFavor;
+    int i = 0;
+
+    while (golesRestantes > 0) {
+        jugadores[i % cantidadJugadores].anotarGol();
+        golesRestantes--;
+        i++;
+        ITERACIONES++;
     }
 }
 
@@ -55,14 +83,20 @@ void Equipo::actualizarEstadisticas(int gf, int gc) {
     golesFavor += gf;
     golesContra += gc;
 }
-int Equipo::getGolesFavor() const {
+void Equipo::actualizarEstadisticas(int gf, int gc, int amarillas, int rojas) {
+    golesFavor += gf;
+    golesContra += gc;
+    amarillasTotales += amarillas;
+    rojasTotales += rojas;
+}
+short int Equipo::getGolesFavor() const {
     return golesFavor;
 }
 
-int Equipo::getGolesContra() const {
+short int Equipo::getGolesContra() const {
     return golesContra;
 }
-int Equipo::getRanking() const {
+short int Equipo::getRanking() const {
     return ranking;
 }
 string Equipo::getConfederacion() const {
@@ -75,14 +109,14 @@ Jugador* Equipo::getJugador(int i) {
     return &jugadores[i];
 }
 
-int Equipo::getCantidadJugadores() const {
+short int Equipo::getCantidadJugadores() const {
     return cantidadJugadores;
 }
 void Equipo::sumarAmarilla(string fase, int cantidad) {
     amarillasPorFase[fase] += cantidad;
 }
 
-int Equipo::getAmarillasFase(string fase) const {
+short int Equipo::getAmarillasFase(string fase) const {
 
     auto it = amarillasPorFase.find(fase);
 
@@ -92,13 +126,14 @@ int Equipo::getAmarillasFase(string fase) const {
     return 0;
 }
 
-int Equipo::getAmarillasTotales() const {
+short int Equipo::getAmarillasTotales() const {
 
     int total = 0;
 
     for (auto it = amarillasPorFase.begin();
          it != amarillasPorFase.end(); ++it) {
         total += it->second;
+        ITERACIONES++;
     }
 
     return total;
@@ -108,6 +143,9 @@ void Equipo::acumularTarjetas(int amarillas, int rojas) {
     this->amarillasTotales += amarillas;
     this->rojasTotales += rojas;
 }
-int Equipo::getRojasTotales() const {
+short int Equipo::getRojasTotales() const {
     return rojasTotales;
+}
+bool Equipo:: operator>(const Equipo& otro) const {
+    return golesFavor > otro.golesFavor;
 }

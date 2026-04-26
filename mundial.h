@@ -22,6 +22,9 @@ private:
     Lista<Equipo*> bombo3;
     Lista<Equipo*> bombo4;
     Lista<Partido*> partidos;
+    Equipo** equiposControl;   // punteros a equipos
+    int* ultimoDia;            // último día que jugaron
+    int totalEquiposControl;
 
 
     Lista<Partido*> partidosR16;
@@ -36,6 +39,9 @@ private:
     Lista<Equipo*> clasificadosR4;
 
     Lista<Equipo*> todosLosJugadores; // para estadísticas
+    Lista<Equipo*> equiposR16;
+    Lista<Equipo*> equiposR8;
+    Lista<Equipo*> equiposR4;
 
 
     Lista<TablaGrupo*> tablas;
@@ -59,6 +65,9 @@ public:
     void crearBombos();
     void formarGrupos();
     void mostrarGrupos();
+    void registrarPartido(Equipo* e1, Equipo* e2, int dia);
+    bool puedeJugar(Equipo* e, int diaActual);
+    int buscarEquipoIndex(Equipo* e);
     void generarPartidosGrupos();
     void simularFaseGrupos();
     void crearTablas();
@@ -99,6 +108,9 @@ public:
     string calcularFecha(string base, int dias);
 
     void mostrarMemoria();
+    void liberarPartidos(Lista<Partido*>& lista);
+    void guardarJugadoresCSV();
+    void mostrarConfederacionDominante(Lista<Equipo*>& lista, string fase);
 
 
 };

@@ -1,4 +1,5 @@
 #include "tablagrupo.h"
+#include "utilidades.h"
 
 TablaGrupo::TablaGrupo() {
     grupo = nullptr;
@@ -6,6 +7,7 @@ TablaGrupo::TablaGrupo() {
 void TablaGrupo::inicializar() {
 
     for (int i = 0; i < grupo->getTamano(); i++) {
+        ITERACIONES++;
 
         Equipo* eq = grupo->getEquipo(i);
         if (eq == nullptr) continue;
@@ -33,6 +35,7 @@ void TablaGrupo::actualizar(Partido* p) {
     int gB = p->getGoles2();
 
     for (int i = 0; i < tabla.tamano(); i++) {
+        ITERACIONES++;
 
         StatsEquipo* s = tabla.consultar(i);
 
@@ -62,7 +65,9 @@ void TablaGrupo::ordenar() {
     int n = tabla.tamano();
 
     for (int i = 0; i < n - 1; i++) {
+        ITERACIONES++;
         for (int j = 0; j < n - i - 1; j++) {
+            ITERACIONES++;
 
             StatsEquipo* a = tabla.consultar(j);
             StatsEquipo* b = tabla.consultar(j + 1);
@@ -95,6 +100,7 @@ void TablaGrupo::mostrar() {
     cout << "----------------------------------\n";
 
     for (int i = 0; i < tabla.tamano(); i++) {
+        ITERACIONES++;
 
         StatsEquipo* s = tabla.consultar(i);
 
@@ -125,14 +131,12 @@ Lista<Equipo*> TablaGrupo::clasificados() {
     ordenar();
 
     for (int i = 0; i < 2; i++) {
+        ITERACIONES++;
         res.agregar(tabla.consultar(i)->equipo, res.tamano());
     }
 
     return res;
 }
-/*TablaGrupo::~TablaGrupo() {
-    for (int i = 0; i < tabla.tamano(); i++) {
-        delete tabla.consultar(i);
-    }
-}*/
+
+
 

@@ -23,7 +23,6 @@ private:
 public:
     Lista() : cabeza(nullptr), n(0) {}
 
-    // ✔ COPIA PROFUNDA (CLAVE)
     Lista(const Lista<T>& other) {
         cabeza = nullptr;
         n = 0;
@@ -38,7 +37,6 @@ public:
         }
     }
 
-    // ✔ OPERADOR ASIGNACIÓN (CLAVE)
     Lista<T>& operator=(const Lista<T>& other) {
         if (this == &other) return *this;
 

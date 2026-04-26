@@ -3,6 +3,7 @@
 #include <ctime>   // time
 #include <fstream>
 #include "Mundial.h"
+#include "utilidades.h"
 
 
 
@@ -10,39 +11,19 @@ using namespace std;
 
 int main() {
     try{
-    // ya lee el archivo pero sigue con problemas
     ifstream test("selecciones_clasificadas_mundial.csv");
 
 
     if (test.is_open()) {
         cout << "Archivo encontrado" << endl;
     } else {
-        cout << "Archivo NO encontrado" << endl;
+        throw "Archivo NO encontrado" ;
     }
     srand(time(0));
 
     Mundial mundial;
     mundial.iniciar();
-/*
-    cout << "===== CARGANDO EQUIPOS =====" << endl;
-    mundial.cargarEquipos("selecciones_clasificadas_mundial.csv");
-    mundial.crearBombos();
 
-    cout << "\n===== FORMANDO GRUPOS =====" << endl;
-    mundial.formarGrupos();
-
-    cout << "\n===== GRUPOS =====" << endl;
-    mundial.mostrarGrupos();
-
-    cout << "\n===== GENERANDO PARTIDOS =====" << endl;
-    mundial.generarPartidosGrupos();
-
-    cout << "\n===== SIMULANDO FASE DE GRUPOS =====" << endl;
-
-    cout << "\n===== MEMORIA =====" << endl;
-    mundial.mostrarMemoria();
-
-    cout << "\n===== FIN =====" << endl;*/
     }
     catch (const char* e){
         cout << "Error: " << e << endl;

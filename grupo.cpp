@@ -1,4 +1,5 @@
 #include "grupo.h"
+#include "utilidades.h"
 #include <iostream>
 
 using namespace std;
@@ -26,6 +27,7 @@ bool Grupo::puedeAgregar(Equipo* e) {
 
             contadorUEFA++;
         }
+        ITERACIONES++;
     }
     if (e->getConfederacion() == "UEFA" && contadorUEFA >= 2) {
         return false;
@@ -47,6 +49,7 @@ void Grupo::mostrarEquipos() const {
 
     for (int i = 0; i < equipos.tamano(); i++) {
         cout << "- " << equipos.consultar(i)->getPais() << endl;
+        ITERACIONES++;
     }
 }
 void Grupo::quitarUltimo() {
@@ -59,7 +62,7 @@ void Grupo::quitarUltimo() {
 char Grupo::getLetra() const {
     return letra;
 }
-int Grupo::getTamano() const {
+short int Grupo::getTamano() const {
     return equipos.tamano();
 }
 

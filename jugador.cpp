@@ -1,4 +1,5 @@
 #include "jugador.h"
+#include "utilidades.h"
 
 Jugador::Jugador() {
     nombre = "";
@@ -46,9 +47,9 @@ void Jugador::jugarPartido(int minutos) {
 
 string Jugador::getNombre() const { return nombre; }
 string Jugador::getApellido() const { return apellido; }
-int Jugador::getNumero() const { return numero; }
-int Jugador::getGoles() const { return goles; }
-int Jugador::getPartidos() const { return partidosJugados; }
+short int Jugador::getNumero() const { return numero; }
+short int Jugador::getGoles() const { return goles; }
+short int Jugador::getPartidos() const { return partidosJugados; }
 void Jugador::anotarGol() {
     goles++;
 }
@@ -85,7 +86,30 @@ void Jugador::sumarGol() {
     golesTorneo++;
 }
 
-int Jugador::getGolesTorneo() const {
+short int Jugador::getGolesTorneo() const {
     return golesTorneo;
+}
+Jugador& Jugador::operator=(const Jugador& otro) {
+    if (this != &otro) {
+        nombre = otro.nombre;
+        apellido = otro.apellido;
+        numero = otro.numero;
+        partidosJugados = otro.partidosJugados;
+        goles = otro.goles;
+        minutosJugados = otro.minutosJugados;
+        asistencias = otro.asistencias;
+        amarillas = otro.amarillas;
+        rojas = otro.rojas;
+        faltas = otro.faltas;
+    }
+    return *this;
+}
+bool Jugador::operator<(const Jugador& otro) const {
+    return goles < otro.goles;
+}
+ostream& operator<<(ostream& os, const Jugador& j) {
+    os << j.nombre << " " << j.apellido
+       << " (#" << j.numero << ", " << j.goles << " goles)";
+    return os;
 }
 

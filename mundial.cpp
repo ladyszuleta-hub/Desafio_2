@@ -1,6 +1,7 @@
 #include "mundial.h"
 #include "partido.h"
 #include "sorteo.h"
+#include "utilidades.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -9,6 +10,7 @@ using namespace std;
 Mundial::Mundial() {
     for (int i = 0; i < 12; i++) {
         grupos.agregar(new Grupo('A' + i), i);
+        ITERACIONES++;
     }
 }
 void Mundial::cargarEquipos(const string& archivo) {
@@ -64,9 +66,54 @@ void Mundial::cargarEquipos(const string& archivo) {
     } catch (...) {
             cout << "Error convirtiendo linea: " << linea << endl;
         }
+    ITERACIONES++;
+    }
+    totalEquiposControl = equipos.tamano();
+
+    equiposControl = new Equipo*[totalEquiposControl];
+    ultimoDia = new int[totalEquiposControl];
+
+    for (int i = 0; i < totalEquiposControl; i++) {
+        ITERACIONES++;
+        equiposControl[i] = equipos.consultar(i);
+        ultimoDia[i] = -100; // nunca ha jugado
     }
 
     file.close();
+}
+int Mundial::buscarEquipoIndex(Equipo* e) {
+
+    for (int i = 0; i < totalEquiposControl; i++) {
+        if (equiposControl[i] == e)
+            return i;
+    }
+
+    return -1;
+}
+bool Mundial::puedeJugar(Equipo* e, int diaActual) {
+
+    int idx = buscarEquipoIndex(e);
+
+    if (idx == -1) return true;
+
+    return (diaActual - ultimoDia[idx]) >= 3;
+}
+void Mundial::registrarPartido(Equipo* e1, Equipo* e2, int dia) {
+
+    int i1 = buscarEquipoIndex(e1);
+    int i2 = buscarEquipoIndex(e2);
+
+    if (i1 != -1) ultimoDia[i1] = dia;
+    if (i2 != -1) ultimoDia[i2] = dia;
+}
+void Mundial::liberarPartidos(Lista<Partido*>& lista) {
+
+    for (int i = 0; i < lista.tamano(); i++) {
+        ITERACIONES++;
+        delete lista.consultar(i);
+    }
+
+    lista.vaciar();
 }
 void Mundial::mezclarLista(Lista<Equipo*>& lista) {
 
@@ -81,6 +128,7 @@ void Mundial::mezclarLista(Lista<Equipo*>& lista) {
 
         lista.reemplazar(tempJ, i);
         lista.reemplazar(tempI, j);
+        ITERACIONES++;
     }
 }
 
@@ -148,6 +196,7 @@ bool Mundial::asignar(int grupoIdx, int bomboIdx) {
 
             bombo->agregar(e, bombo->tamano());
             g->quitarUltimo();
+            ITERACIONES++;
         }
     }
 
@@ -165,27 +214,44 @@ void Mundial::mostrarGrupos() {
     for (int i = 0; i < grupos.tamano(); i++) {
         grupos.consultar(i)->mostrarEquipos();
         cout << endl;
+        ITERACIONES++;
     }
 }
-string Mundial::calcularFecha(string /*base*/, int dias) {
+string Mundial::calcularFecha(string , int dias) {
+
     int dia = 20 + dias;
-    return "2026-06-" + to_string(dia);
+    int mes = 6; // junio
+
+    if (dia > 30) {
+        dia -= 30;
+        mes = 7; // julio
+    }
+
+    string diaStr = (dia < 10) ? "0" + to_string(dia) : to_string(dia);
+    string mesStr = (mes < 10) ? "0" + to_string(mes) : to_string(mes);
+
+    return "2026-" + mesStr + "-" + diaStr;
 }
 void Mundial::generarPartidosGrupos() {
 
-    int dia = 0;
-    int partidosEnDia = 0;
+    const int MAXP = 500;
 
-    string fechaBase = "2026-06-20";
+    Equipo* local[MAXP];
+    Equipo* visitante[MAXP];
+    bool jugado[MAXP];
 
+    int total = 0;
+
+    // Crear todos los partidos pendientes de todos los grupos
     for (int i = 0; i < grupos.tamano(); i++) {
+        ITERACIONES++;
 
         Grupo* g = grupos.consultar(i);
 
         Equipo* e[4];
-        for (int j = 0; j < 4; j++) {
-            e[j] = g->getEquipo(j);
-        }
+        for (int j = 0; j < 4; j++){
+            ITERACIONES++;
+            e[j] = g->getEquipo(j);}
 
         int comb[6][2] = {
             {0,1}, {0,2}, {0,3},
@@ -193,35 +259,60 @@ void Mundial::generarPartidosGrupos() {
         };
 
         for (int k = 0; k < 6; k++) {
-
-            if (partidosEnDia == 4) {
-                dia++;
-                partidosEnDia = 0;
-            }
-
-            string fecha = calcularFecha("2026-06-20", dia);
-
-            Partido* p = new Partido(
-                e[comb[k][0]],
-                e[comb[k][1]],
-                fecha,
-                "00:00",
-                "nombreSede",
-                "codArbitro1",
-                "codArbitro2",
-                "codArbitro3",
-                GRUPOS
-                );
-
-            partidos.agregar(p, partidos.tamano());
-
-            partidosEnDia++;
+            ITERACIONES++;
+            local[total] = e[comb[k][0]];
+            visitante[total] = e[comb[k][1]];
+            jugado[total] = false;
+            total++;
         }
+    }
+
+    int pendientes = total;
+    int dia = 0;
+
+    while (pendientes > 0) {
+        ITERACIONES++;
+
+        int partidosHoy = 0;
+
+        for (int i = 0; i < total && partidosHoy < 4; i++) {
+            ITERACIONES++;
+            if (jugado[i]) continue;
+
+            if (puedeJugar(local[i], dia) &&
+                puedeJugar(visitante[i], dia)) {
+
+                string fecha = calcularFecha("2026-06-20", dia);
+
+                Partido* p = new Partido(
+                    local[i],
+                    visitante[i],
+                    fecha,
+                    "00:00",
+                    "nombreSede",
+                    "codArbitro1",
+                    "codArbitro2",
+                    "codArbitro3",
+                    GRUPOS
+                    );
+
+                partidos.agregar(p, partidos.tamano());
+
+                registrarPartido(local[i], visitante[i], dia);
+
+                jugado[i] = true;
+                pendientes--;
+                partidosHoy++;
+            }
+        }
+
+        dia++;
     }
 }
 void Mundial::simularFaseGrupos() {
 
     for (int i = 0; i < partidos.tamano(); i++) {
+        ITERACIONES++;
 
         Partido* p = partidos.consultar(i);
 
@@ -236,6 +327,7 @@ void Mundial::simularFaseGrupos() {
         }
 
         for (int j = 0; j < tablas.tamano(); j++) {
+            ITERACIONES++;
 
             if (tablas.consultar(j) != nullptr) {
                 tablas.consultar(j)->actualizar(p);
@@ -246,6 +338,7 @@ void Mundial::simularFaseGrupos() {
 void Mundial::mostrarTablas() {
 
     for (int i = 0; i < tablas.tamano(); i++) {
+        ITERACIONES++;
 
         //cout << "Grupo " << i << endl;
         tablas.consultar(i)->mostrar();
@@ -255,6 +348,7 @@ void Mundial::mostrarTablas() {
 void Mundial::crearTablas() {
 
     for (int i = 0; i < grupos.tamano(); i++) {
+        ITERACIONES++;
 
         TablaGrupo* t = new TablaGrupo(grupos.consultar(i));
 
@@ -268,6 +362,7 @@ Lista<Equipo*> Mundial::obtenerClasificados() {
     Lista<Equipo*> clasificados;
 
     for (int i = 0; i < tablas.tamano(); i++) {
+        ITERACIONES++;
 
         clasificados.concatenar(
             tablas.consultar(i)->clasificados()
@@ -281,7 +376,9 @@ void Mundial::ordenarTerceros(Lista<StatsEquipo*>& terceros) {
     int n = terceros.tamano();
 
     for (int i = 0; i < n - 1; i++) {
+        ITERACIONES++;
         for (int j = 0; j < n - i - 1; j++) {
+            ITERACIONES++;
 
             StatsEquipo* a = terceros.consultar(j);
             StatsEquipo* b = terceros.consultar(j + 1);
@@ -311,6 +408,7 @@ void Mundial::calcularClasificados() {
     segundos.vaciar();
     terceros.vaciar();
     for (int i = 0; i < tablas.tamano(); i++) {
+        ITERACIONES++;
 
         TablaGrupo* t = tablas.consultar(i);
         t->ordenar();
@@ -324,20 +422,25 @@ void Mundial::calcularClasificados() {
 
     clasificadosR16.vaciar();
 
-    for (int i = 0; i < primeros.tamano(); i++)
-        clasificadosR16.agregar(primeros.consultar(i), clasificadosR16.tamano());
+    for (int i = 0; i < primeros.tamano(); i++){
+        ITERACIONES++;
+        clasificadosR16.agregar(primeros.consultar(i), clasificadosR16.tamano());}
 
-    for (int i = 0; i < segundos.tamano(); i++)
-        clasificadosR16.agregar(segundos.consultar(i), clasificadosR16.tamano());
+    for (int i = 0; i < segundos.tamano(); i++){
+        ITERACIONES++;
+        clasificadosR16.agregar(segundos.consultar(i), clasificadosR16.tamano());}
 
-    for (int i = 0; i < 8; i++)
-        clasificadosR16.agregar(terceros.consultar(i)->equipo, clasificadosR16.tamano());
+    for (int i = 0; i < 8; i++){
+        ITERACIONES++;
+        clasificadosR16.agregar(terceros.consultar(i)->equipo, clasificadosR16.tamano());}
 }
 Partido* Mundial::crearCruceValido(Lista<Equipo*>& A, Lista<Equipo*>& B) {
 
 
     for (int i = 0; i < A.tamano(); i++) {
+        ITERACIONES++;
         for (int j = 0; j < B.tamano(); j++) {
+            ITERACIONES++;
 
             Equipo* e1 = A.consultar(i);
             Equipo* e2 = B.consultar(j);
@@ -372,15 +475,18 @@ void Mundial::generarR16() {
     int limite = (terceros.tamano() < 8) ? terceros.tamano() : 8;
 
     for (int i = 0; i < limite; i++) {
+        ITERACIONES++;
         t.agregar(terceros.consultar(i)->equipo, t.tamano());
     }
-
     // P vs T
     while (!p.esVacia() && !t.esVacia()) {
+        ITERACIONES++;
 
         Partido* partido = crearCruceValido(p, t);
 
-        if (!partido) break;
+        if (partido == nullptr) {
+            break;
+        }
 
         partidosR16.agregar(partido, partidosR16.tamano());
 
@@ -390,7 +496,7 @@ void Mundial::generarR16() {
 
     // P vs S
     while (!p.esVacia() && !s.esVacia()) {
-
+        ITERACIONES++;
         Partido* partido = crearCruceValido(p, s);
 
         if (!partido) break;
@@ -401,22 +507,36 @@ void Mundial::generarR16() {
         s.eliminar(partido->getEquipo2());
     }
 
+    Lista<Equipo*> s1;
+    Lista<Equipo*> s2;
+
+    for (int i = 0; i < s.tamano(); i++) {
+        ITERACIONES++;
+        s1.agregar(s.consultar(i), s1.tamano());
+        s2.agregar(s.consultar(i), s2.tamano());
+    }
     // S vs S
-    while (s.tamano() > 1) {
+    while (s1.tamano() > 0 && s2.tamano() > 0) {
+        ITERACIONES++;
 
-        Partido* partido = crearCruceValido(s, s);
+        Partido* partido = crearCruceValido(s1, s2);
 
-        if (!partido) break;
+        if (partido != nullptr) {
 
-        partidosR16.agregar(partido, partidosR16.tamano());
+            partidosR16.agregar(partido, partidosR16.tamano());
 
-        s.eliminar(partido->getEquipo1());
-        s.eliminar(partido->getEquipo2());
+            s1.eliminar(partido->getEquipo1());
+            s2.eliminar(partido->getEquipo2());
+
+        } else {
+            break;
+        }
     }
 }
 void Mundial::simularR16() {
 
     for (int i = 0; i < partidosR16.tamano(); i++) {
+        ITERACIONES++;
 
         Partido* p = partidosR16.consultar(i);
 
@@ -429,15 +549,47 @@ void Mundial::simularR16() {
         p->mostrarResultado();
     }
 }
+
 void Mundial::mostrarMemoria() {
 
     size_t memoria = 0;
 
+    for (int i = 0; i < equipos.tamano(); i++) {
+        ITERACIONES++;
+
+        Equipo* e = equipos.consultar(i);
+
+        memoria += sizeof(Equipo);
+
+        // jugadores
+        memoria += e->getCantidadJugadores() * sizeof(Jugador);
+    }
+
+    for (int i = 0; i < partidos.tamano(); i++) {
+        ITERACIONES++;
+
+        memoria += sizeof(Partido);
+
+        // arrays internos (11 jugadores por equipo)
+        memoria += 22 * sizeof(StatsJugadorPartido);
+    }
+
+    for (int i = 0; i < partidosR16.tamano(); i++) {
+        ITERACIONES++;
+
+        memoria += sizeof(Partido);
+        memoria += 22 * sizeof(StatsJugadorPartido);
+    }
+
     memoria += equipos.tamano() * sizeof(Equipo*);
     memoria += partidos.tamano() * sizeof(Partido*);
-    memoria += clasificadosR16.tamano() * sizeof(Equipo*);
+    memoria += partidosR16.tamano() * sizeof(Partido*);
 
-    cout << "\n🧠 Memoria estimada: " << memoria << " bytes\n";
+    memoria += sizeof(int) * 10;
+    memoria += sizeof(double) * 5;
+
+    cout << "\n Memoria estimada TOTAL: "
+         << memoria << " bytes\n";
 }
 void Mundial::mostrarR16() {
 
@@ -446,6 +598,7 @@ void Mundial::mostrarR16() {
     cout << "Equipo A\tGoles\tEquipo B\tGanador\n";
 
     for (int i = 0; i < partidosR16.tamano(); i++) {
+        ITERACIONES++;
 
         Partido* p = partidosR16.consultar(i);
 
@@ -466,87 +619,81 @@ void Mundial::iniciar() {
     cargarEquipos("selecciones_clasificadas_mundial.csv");
     crearBombos();
     formarGrupos();
-
     cout << "\n===== GRUPOS =====" << endl;
     mostrarGrupos();
-
     crearTablas();
     generarPartidosGrupos();
     simularFaseGrupos();
-
     cout << "\n===== TABLAS =====" << endl;
     mostrarTablas();
 
     calcularClasificados();
-
-    // =========================
+    cout << "\nIteraciones totales: " << ITERACIONES << endl;
+    ITERACIONES=0;
     // DIECISEISAVOS (R16)
-    // =========================
     cout << "\n===== DIECISEISAVOS =====" << endl;
-
     generarR16();
     Lista<Equipo*> clasificados8;
-    simularFase(partidosR16, clasificados8);
-
-    // =========================
+    simularFase(partidosR16, equiposR8);
+    cout << "\nIteraciones totales: " << ITERACIONES << endl;
+    ITERACIONES=0;
     // OCTAVOS DE FINAL
-    // =========================
     cout << "\n===== OCTAVOS DE FINAL =====" << endl;
-
-    Lista<Partido*> octavos = generarFase(clasificados8, R16);
+    Lista<Partido*> octavos = generarFase(equiposR8, R16);
     Lista<Equipo*> clasificados4;
-
-    simularFase(octavos, clasificados4);
-
-    // =========================
+    simularFase(octavos, equiposR4);
+    liberarPartidos(octavos);
+    cout << "\nIteraciones totales: " << ITERACIONES << endl;
+    ITERACIONES=0;
     // CUARTOS DE FINAL
-    // =========================
     cout << "\n===== CUARTOS DE FINAL =====" << endl;
-
-    Lista<Partido*> cuartos = generarFase(clasificados4, R16);
+    Lista<Partido*> cuartos = generarFase(equiposR4, R16);
     Lista<Equipo*> clasificados2;
-
     simularFase(cuartos, clasificados2);
-
-    // =========================
+    liberarPartidos(cuartos);
+    cout << "\nIteraciones totales: " << ITERACIONES << endl;
+    ITERACIONES=0;
     // SEMIFINALES
-    // =========================
     cout << "\n===== SEMIFINALES =====" << endl;
-
     Lista<Partido*> semifinal = generarFase(clasificados2, R16);
     Lista<Equipo*> finalistas;
-
     simularFase(semifinal, finalistas);
-
-    // =========================
-    // FINAL
-    // =========================
+    liberarPartidos(semifinal);
+    cout << "\nIteraciones totales: " << ITERACIONES << endl;
+    ITERACIONES=0;
+    //FINAL
     cout << "\n===== FINAL =====" << endl;
-
     Lista<Partido*> final = generarFase(finalistas, R16);
     Lista<Equipo*> campeonLista;
-
     simularFase(final, campeonLista);
-
+    liberarPartidos(final);
     campeon = campeonLista.consultar(0);
-
-    // =========================
+    cout << "\nIteraciones totales: " << ITERACIONES << endl;
+    ITERACIONES=0;
     // CAMPEÓN
-    // =========================
     cout << "\n===== CAMPEÓN =====" << endl;
-   cout << campeon->getPais() << endl;
-
-    // =========================
+    cout << campeon->getPais() << endl;
+    cout << "\nIteraciones totales: " << ITERACIONES << endl;
+    ITERACIONES=0;
     // ESTADÍSTICAS FINALES
-    // =========================
-    cout << "\n===== ESTADÍSTICAS DEL MUNDIAL =====" << endl;
-
+    cout << "\n===== ESTADISTICAS DEL MUNDIAL =====" << endl;
     mostrarEstadisticasFinales();
+    cout << "\nIteraciones totales: " << ITERACIONES << endl;
+    ITERACIONES=0;
+    guardarJugadoresCSV();
+    cout << "\nIteraciones totales: " << ITERACIONES << endl;
+
+    mostrarMemoria();
 }
 Mundial::~Mundial() {
     for (int i = 0; i < partidosR16.tamano(); i++) {
         delete partidosR16.consultar(i);
     }
+    for (int i = 0; i < partidos.tamano(); i++) {
+        delete partidos.consultar(i);
+    }
+    delete[] equiposControl;
+    delete[] ultimoDia;
 }
 void Mundial::registrarEnfrentamiento(Equipo* a, Equipo* b) {
 
@@ -559,6 +706,7 @@ void Mundial::registrarEnfrentamiento(Equipo* a, Equipo* b) {
 bool Mundial::yaSeEnfrentaron(Equipo* a, Equipo* b) {
 
     for (int i = 0; i < historial.tamano(); i++) {
+        ITERACIONES++;
 
         Enfrentamiento e = historial.consultar(i);
 
@@ -577,6 +725,7 @@ Lista<Partido*> Mundial::generarFase(Lista<Equipo*>& equipos, Fase f) {
     int i = 0;
 
     while (i + 1 < equipos.tamano()) {
+        ITERACIONES++;
 
         Equipo* a = equipos.consultar(i);
         Equipo* b = equipos.consultar(i + 1);
@@ -607,6 +756,7 @@ void Mundial::simularFase(Lista<Partido*>& fase, Lista<Equipo*>& clasificados) {
     clasificados.vaciar();
 
     for (int i = 0; i < fase.tamano(); i++) {
+        ITERACIONES++;
 
         Partido* p = fase.consultar(i);
 
@@ -627,83 +777,84 @@ void Mundial::simularFase(Lista<Partido*>& fase, Lista<Equipo*>& clasificados) {
 }
 void Mundial::mostrarTop4() {
 
-    Lista<Equipo*> todos = clasificadosR16;
+    Equipo* top1 = nullptr;
+    Equipo* top2 = nullptr;
+    Equipo* top3 = nullptr;
+    Equipo* top4 = nullptr;
 
-    for (int i = 0; i < todos.tamano(); i++) {
-        for (int j = 0; j < todos.tamano() - 1; j++) {
+    for (int i = 0; i < equipos.tamano(); i++) {
+        ITERACIONES++;
 
-            Equipo* a = todos.consultar(j);
-            Equipo* b = todos.consultar(j + 1);
+        Equipo* e = equipos.consultar(i);
 
-            // orden por goles del mundial (lo que sí existe)
-            if (a->getGolesFavor() < b->getGolesFavor()) {
-                todos.reemplazar(b, j);
-                todos.reemplazar(a, j + 1);
-            }
+        if (!top1 || *e > *top1) {
+            top4 = top3;
+            top3 = top2;
+            top2 = top1;
+            top1 = e;
+        }
+        else if (!top2 || *e > *top2) {
+            top4 = top3;
+            top3 = top2;
+            top2 = e;
+        }
+        else if (!top3 || *e > *top3) {
+            top4 = top3;
+            top3 = e;
+        }
+        else if (!top4 || *e > *top4) {
+            top4 = e;
         }
     }
 
     cout << "\n TOP 4 DEL MUNDIAL:\n";
 
-    for (int i = 0; i < 4 && i < todos.tamano(); i++) {
-        cout << i + 1 << ". " << todos.consultar(i)->getPais()
-        << " (" << todos.consultar(i)->getGolesFavor() << " goles)\n";
-    }
+    if (top1) cout << "1. " << top1->getPais() << " (" << top1->getGolesFavor() << " goles)\n";
+    if (top2) cout << "2. " << top2->getPais() << " (" << top2->getGolesFavor() << " goles)\n";
+    if (top3) cout << "3. " << top3->getPais() << " (" << top3->getGolesFavor() << " goles)\n";
+    if (top4) cout << "4. " << top4->getPais() << " (" << top4->getGolesFavor() << " goles)\n";
 }
 
 
 void Mundial::top3Goleadores() {
 
-    Lista<Jugador*> jugadores;
-
-    // RECOLECTAR TODOS LOS JUGADORES
+    Jugador* top1 = nullptr;
+    Jugador* top2 = nullptr;
+    Jugador* top3 = nullptr;
 
     for (int i = 0; i < equipos.tamano(); i++) {
+        ITERACIONES++;
 
         Equipo* e = equipos.consultar(i);
 
         for (int j = 0; j < e->getCantidadJugadores(); j++) {
+            ITERACIONES++;
 
-            jugadores.agregar(e->getJugador(j), jugadores.tamano());
-        }
-    }
+            Jugador* actual = e->getJugador(j);
 
-    if (jugadores.tamano() == 0) {
-        cout << "\nNo hay jugadores.\n";
-        return;
-    }
-
-    // ORDENAR POR GOLES
-
-    for (int i = 0; i < jugadores.tamano() - 1; i++) {
-        for (int j = 0; j < jugadores.tamano() - i - 1; j++) {
-
-            Jugador* a = jugadores.consultar(j);
-            Jugador* b = jugadores.consultar(j + 1);
-
-            if (a->getGoles() < b->getGoles()) {
-
-                jugadores.reemplazar(b, j);
-                jugadores.reemplazar(a, j + 1);
+            // TOP 1
+            if (top1 == nullptr || actual->getGoles() > top1->getGoles()) {
+                top3 = top2;
+                top2 = top1;
+                top1 = actual;
+            }
+            // TOP 2
+            else if (top2 == nullptr || actual->getGoles() > top2->getGoles()) {
+                top3 = top2;
+                top2 = actual;
+            }
+            // TOP 3
+            else if (top3 == nullptr || actual->getGoles() > top3->getGoles()) {
+                top3 = actual;
             }
         }
     }
 
-    // MOSTRAR TOP 3
-
     cout << "\n TOP 3 GOLEADORES DEL MUNDIAL:\n";
 
-    int limite = (jugadores.tamano() < 3) ? jugadores.tamano() : 3;
-
-    for (int i = 0; i < limite; i++) {
-
-        Jugador* j = jugadores.consultar(i);
-
-        cout << i + 1 << ". "
-             << j->getNombre() << " "
-             << j->getApellido()
-             << " - " << j->getGoles() << " goles\n";
-    }
+    if (top1) cout << "1. " << *top1 << endl;
+    if (top2) cout << "2. " << *top2 << endl;
+    if (top3) cout << "3. " << *top3 << endl;
 }
 
 void Mundial::mostrarEstadisticasFinales() {
@@ -713,20 +864,16 @@ void Mundial::mostrarEstadisticasFinales() {
             ""
             " INFORME FINAL DEL MUNDIAL\n";
     cout << "==============================\n";
-
-
     // TOP 4 EQUIPOS (por goles en el torneo)
-
     mostrarTop4();
-
     //  MÁXIMO GOLEADOR DEL CAMPEÓN
-
    Equipo* campeon = this->campeon;
 
     Jugador* mejor = nullptr;
     int maxGoles = 0;
 
     for (int i = 0; i < campeon->getCantidadJugadores(); i++) {
+        ITERACIONES++;
 
         Jugador* j = campeon->getJugador(i);
 
@@ -759,6 +906,7 @@ void Mundial::mostrarEstadisticasFinales() {
     int maxE = -1;
 
     for (int i = 0; i < equipos.tamano(); i++) {
+        ITERACIONES++;
 
         Equipo* e = equipos.consultar(i);
 
@@ -771,11 +919,84 @@ void Mundial::mostrarEstadisticasFinales() {
     cout << "\n EQUIPO MAS GOLEADOR:\n";
     cout << mejorEquipo->getPais()
          << " (" << maxE << " goles)\n";
+    cout << "\n===== CONFEDERACIONES DOMINANTES =====\n";
+
+    mostrarConfederacionDominante(clasificadosR16, "R16");
+    mostrarConfederacionDominante(equiposR8, "R8");
+    mostrarConfederacionDominante(equiposR4, "R4");
 
 
     // MEMORIA
 
     cout << "\n METRICAS:\n";
 
-    mostrarMemoria();
+}
+void Mundial::guardarJugadoresCSV() {
+
+    ofstream archivo("jugadores.csv");
+
+    archivo << "equipo;numero;nombre;apellido;goles;amarillas;rojas;faltas;minutos;asistencias;partidos\n";
+
+    for (int i = 0; i < equipos.tamano(); i++) {
+        ITERACIONES++;
+
+        Equipo* eq = equipos.consultar(i);
+
+        for (int j = 0; j < eq->getCantidadJugadores(); j++) {
+            ITERACIONES++;
+
+            Jugador* ju = eq->getJugador(j);
+
+            archivo << eq->getPais() << ";"<< ju->getNumero() << ";"<< ju->getNombre() << ";"<< ju->getApellido() << ";"<< ju->getGoles() << ";"<< ju->getAmarillas() << ";"
+                    << ju->getRojas() << ";"<< ju->getFaltas() << ";"<< ju->getMinutos() << ";"<< ju->getAsistencias() << ";"<< ju->getPartidos()<< "\n";
+        }
+    }
+
+    archivo.close();
+
+    cout << "\nArchivo jugadores.csv generado correctamente\n";
+}
+void Mundial::mostrarConfederacionDominante(Lista<Equipo*>& lista, string fase) {
+
+    Lista<string> confs;
+    Lista<int> conteos;
+
+    for (int i = 0; i < lista.tamano(); i++) {
+        ITERACIONES++;
+
+        Equipo* e = lista.consultar(i);
+        string conf = e->getConfederacion();
+
+        bool encontrada = false;
+
+        for (int j = 0; j < confs.tamano(); j++) {
+            ITERACIONES++;
+
+            if (confs.consultar(j) == conf) {
+                int val = conteos.consultar(j);
+                conteos.reemplazar(val + 1, j);
+                encontrada = true;
+                break;
+            }
+        }
+
+        if (!encontrada) {
+            confs.agregar(conf, confs.tamano());
+            conteos.agregar(1, conteos.tamano());
+        }
+    }
+
+    int max = 0;
+    string mejor = "";
+
+    for (int i = 0; i < conteos.tamano(); i++) {
+        ITERACIONES++;
+
+        if (conteos.consultar(i) > max) {
+            max = conteos.consultar(i);
+            mejor = confs.consultar(i);
+        }
+    }
+    cout << "\nConfederacion dominante en " << fase << ": "
+         << mejor << " (" << max << " equipos)\n";
 }

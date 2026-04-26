@@ -21,7 +21,7 @@ public:
     void mostrarEquipos() const;
     Equipo* getEquipo(int i);
     char getLetra() const;
-    int getTamano() const;
+    short int getTamano() const;
 };
 
 #endif
