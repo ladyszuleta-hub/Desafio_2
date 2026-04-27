@@ -29,6 +29,8 @@ public:
     StatsEquipo* get(int i);
 
     Lista<Equipo*> clasificados();
+    ~TablaGrupo();
+
 };
 
 

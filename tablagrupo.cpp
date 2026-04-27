@@ -137,6 +137,10 @@ Lista<Equipo*> TablaGrupo::clasificados() {
 
     return res;
 }
-
+TablaGrupo::~TablaGrupo() {
+    for (int i = 0; i < tabla.tamano(); i++) {
+        delete tabla.consultar(i);
+    }
+}
 
 
